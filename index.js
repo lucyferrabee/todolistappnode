@@ -1,9 +1,11 @@
 const express = require('express');
+var cors = require('cors');
 const exphbs = require('express-handlebars');
 const MongoClient = require('mongodb').MongoClient;
 const ObjectId = require('mongodb').ObjectId;
 const app = express();
 app.use(express.json());
+app.use(cors());
 
 app.engine('handlebars', exphbs());
 app.set('view engine', 'handlebars');
@@ -14,6 +16,13 @@ const port = 3000
 
 const url = "mongodb://root:password@localhost:27017"
 
+async function connectToDB() {
+    const connection = await MongoClient.connect("mongodb://root:password@localhost:27017")
+    const db = connection.db('todolistapp')
+    return db.collection('tasks')
+}
+
+app.options('*', cors())
 // get all tasks
 app.get('/tasks', async (request, response) => {
     const connection = await MongoClient.connect(url)
